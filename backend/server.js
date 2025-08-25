@@ -1,14 +1,25 @@
-const express = require("express");
-const dotenv = require("dotenv");
+const express = require('express');
+const connectDB = require('./config/db.js');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 3000;
 
-dotenv.config();
-console.log("Environment Variables Loaded", process.env.MONGO_URL);
-app.get("/", (req, res) => {
-    res.send("Hello, World! Welcome to Book Storez")
-})
+// Connect to MongoDB
+connectDB();
+
+// Middleware
+app.use(express.json());
+
+// Basic route
+app.get('/', (req, res) => {
+    res.json({ message: 'MongoDB Test Server Running!' });
+});
+
+// Health check route
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
-    console.log(`Server listening to ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });

@@ -1,13 +1,19 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+// db.js
+const mongoose = require("mongoose");
 
-dotenv.config();
+const MONGO_URI = "mongodb+srv://maamirshehzadpk:admin123@cluster0.pmthapv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
 
-export const connectDB = async () => {
-  try {
-    const connec = await mongoose.connnect(process.env.MONGO_URL);
-    console.log(`Database connected successfully ${connec.connection.host}`);
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-  }
+const connectDB = async () => {
+    try {
+        await mongoose.connect(MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log("✅ Our MongoDB connected successfully");
+    } catch (err) {
+        console.error("❌ MongoDB connection failed:", err.message);
+        process.exit(1); // Exit process with failure
+    }
 };
+
+module.exports = connectDB;
