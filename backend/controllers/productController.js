@@ -25,3 +25,21 @@ exports.createProduct = async (req, res) => {
     });
   }
 };
+
+exports.deleteProduct = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await Product.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "Product Deleted Successfully",
+    })
+  } catch (error) {
+    console.log("Error in deleting product ", error);
+    res.status(501).json({
+      success: false,
+      message: "Error Deleting Product",
+    })
+  }
+};

@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 const connectDB = require("./config/db.js");
 
-const productRoutes = require("./routes/productRoutes.js");
+const productRoutes = require("./routes/productRoutes.js")
 
 const app = express();
 const PORT = process.env.PORT || 3000;
