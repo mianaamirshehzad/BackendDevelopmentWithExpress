@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Product = require("../models/productModel.js");
 
 exports.createProduct = async (req, res) => {
@@ -23,6 +24,50 @@ exports.createProduct = async (req, res) => {
       success: false,
       message: "Internal Server Error",
     });
+  }
+};
+
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched all products",
+      data: products
+    })
+  } catch (error) {
+    console.log("Error in fetching products", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    })
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  const { id } = req.params;
+  const product = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(404).json({
+      success: false,
+      message: "Invalid product Id"
+    })
+  }
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(id, product, {new: true});
+    res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct
+    })
+  } catch (error) {
+    console.log("Error updating product => ", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    })
   }
 };
 
