@@ -1,50 +1,37 @@
-import React, { useState } from "react";
-import { FiPlus } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const [darkTheme, setDarkTheme] = useState(false);
+  const [books, setBooks] = useState([]);
 
-  const handleThemeToggle = () => setDarkTheme((prev) => !prev);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/books") // adjust your backend URL
+      .then((res) => res.json())
+      .then((data) => setBooks(data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  const deleteBook = async (id) => {
+    await fetch(`http://localhost:5000/api/books/${id}`, { method: "DELETE" });
+    setBooks(books.filter((b) => b._id !== id));
+  };
 
   return (
-    <div className={darkTheme ? "dark-theme" : ""}>
-      <div className="topbar" style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        padding: "1rem",
-        background: darkTheme ? "#222" : "#f5f5f5",
-        borderBottom: "1px solid #ddd"
-      }}>
-        <button
-          style={{
-            background: "none",
-            border: "none",
-            marginRight: "1rem",
-            cursor: "pointer",
-            fontSize: "1.5rem"
-          }}
-          title="Add Product"
-        >
-          <FiPlus />
-        </button>
-        <button
-          onClick={handleThemeToggle}
-          style={{
-            background: darkTheme ? "#444" : "#eee",
-            border: "none",
-            padding: "0.5rem 1rem",
-            borderRadius: "20px",
-            cursor: "pointer"
-          }}
-        >
-          {darkTheme ? "Light Mode" : "Dark Mode"}
-        </button>
-      </div>
-      {/* Add your homepage content here */}
-      <div style={{ padding: "2rem" }}>
-        <h2>Welcome to the Book Store!</h2>
-        <p>Use the plus icon to add new products.</p>
+    <div className="page-container">
+      <h2>Available Books</h2>
+      <div className="book-list">
+        {books.map((book) => (
+          <div className="book-card" key={book._id}>
+            <h3>{book.title}</h3>
+            <p>Author: {book.author}</p>
+            <p>Price: ${book.price}</p>
+            <div className="actions">
+              <Link to={`/book/${book._id}`}>View</Link>
+              <Link to={`/edit/${book._id}`}>Edit</Link>
+              <button onClick={() => deleteBook(book._id)}>Delete</button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
