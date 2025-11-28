@@ -1,53 +1,69 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BooksApi from "../api/BooksApi";
 
 function AddBook() {
-  const [book, setBook] = useState({ title: "", author: "", price: "" });
+  const [product, setProduct] = useState({
+    name: "",
+    price: "",
+    image: ""
+  });
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setBook({ ...book, [e.target.name]: e.target.value });
+    setProduct({
+      ...product,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch("http://localhost:5000/api/books", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(book),
-    });
+
+    const params = {
+      name: product.name,
+      price: Number(product.price),
+      image: product.image || ""
+    };
+
+    const response = await BooksApi.addNewBook(params);
+    console.log("New Product created", response);
+
     navigate("/");
   };
 
   return (
     <div className="form-container">
-      <h2>Add New Book</h2>
+      <h2>Add New Product</h2>
       <form onSubmit={handleSubmit} className="book-form">
         <input
           type="text"
-          name="title"
-          placeholder="Title"
-          value={book.title}
+          name="name"
+          placeholder="Product Name"
+          value={product.name}
           onChange={handleChange}
           required
         />
-        <input
-          type="text"
-          name="author"
-          placeholder="Author"
-          value={book.author}
-          onChange={handleChange}
-          required
-        />
+
         <input
           type="number"
           name="price"
           placeholder="Price"
-          value={book.price}
+          value={product.price}
           onChange={handleChange}
           required
         />
-        <button type="submit">Add Book</button>
+
+        <input
+          type="text"
+          name="image"
+          placeholder="Image URL (optional)"
+          value={product.image}
+          onChange={handleChange}
+        />
+
+        <button type="submit">Add Product</button>
       </form>
     </div>
   );
