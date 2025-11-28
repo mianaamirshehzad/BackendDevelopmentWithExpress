@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./config/db.js");
 
 const productRoutes = require("./routes/productRoutes.js")
@@ -13,6 +14,9 @@ connectDB();
 
 // Middleware - allows to accept JSON data in the request body
 app.use(express.json());
+
+// Enabling Cross Origin Resource Sharing for all requrest
+app.use(cors());
 
 // Use product routes
 app.use("/api", productRoutes);

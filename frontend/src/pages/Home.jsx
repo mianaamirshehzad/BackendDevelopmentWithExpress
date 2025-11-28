@@ -1,19 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import BooksApi from "../api/BooksApi";
 
 function Home() {
   const [books, setBooks] = useState([]);
 
+  const fetchProducts = async () => {
+    try {
+      const response = await BooksApi.getAllBooks();
+      console.log("Products fetched: ", response);
+      setBooks(response.data);
+    } catch (error) {
+      console.error("Failed to fetch products =>", error);
+    }
+  };
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/books") // adjust your backend URL
-      .then((res) => res.json())
-      .then((data) => setBooks(data))
-      .catch((err) => console.error(err));
+    fetchProducts();
   }, []);
 
   const deleteBook = async (id) => {
-    await fetch(`http://localhost:5000/api/books/${id}`, { method: "DELETE" });
-    setBooks(books.filter((b) => b._id !== id));
+    try {
+      await BooksApi.deleteBook(id);
+      setBooks((prevBooks) => prevBooks.filter((b) => b._id !== id));
+    } catch (error) {
+      console.error("Failed to delete book =>", error);
+    }
   };
 
   return (
@@ -21,9 +33,8 @@ function Home() {
       <h2>Available Books</h2>
       <div className="book-list">
         {books.map((book) => (
-          <div className="book-card" key={book._id}>
-            <h3>{book.title}</h3>
-            <p>Author: {book.author}</p>
+          <div key={book._id} className="book-card">
+            <h3>{book.name}</h3>
             <p>Price: ${book.price}</p>
             <div className="actions">
               <Link to={`/book/${book._id}`}>View</Link>
